@@ -148,6 +148,39 @@ footer a{color:var(--sub)}
  body.lock{overflow:hidden}
  footer{padding:0 12px 120px}
 }
+
+.syn{display:flex;flex-wrap:wrap;gap:5px}
+.sy{font-size:13px;border:1.5px solid var(--line);border-radius:14px;padding:2px 9px;color:var(--sub);white-space:nowrap}
+.sy b{color:var(--ink)}.sy i{font-style:normal;color:var(--sub);font-size:12px}
+.sy.on{border-color:var(--gold);background:var(--hl);color:var(--ink)}
+.rech{font-size:16px;color:var(--ink);margin-top:22px}
+.comp{border:1.5px solid var(--line);border-radius:14px;padding:14px;margin-bottom:12px}
+.chh{display:flex;gap:8px;align-items:center;font-size:17px}
+.tier{background:var(--tc);color:#fff;font-weight:900;font-size:13px;border-radius:6px;padding:1px 7px;flex:none}
+.cm{font-size:14px;color:var(--sub);margin:4px 0 10px}
+.units{display:grid;grid-template-columns:repeat(9,64px);gap:8px;justify-content:start}
+.uu{border:0;background:none;padding:0;display:flex;flex-direction:column;align-items:center;gap:3px;position:relative}
+.uu span{font-size:11px;line-height:1.2;text-align:center;color:var(--sub)}
+.up{width:100%;max-width:58px;aspect-ratio:1;height:auto;border-radius:9px;border:2px solid var(--cost);filter:grayscale(1);opacity:.4}
+.uu.have .up{filter:none;opacity:1;box-shadow:0 0 0 2px var(--gold)}
+.uu.have span{color:var(--ink);font-weight:700}
+.uu.have::after{content:"✓";position:absolute;top:-4px;right:2px;width:18px;height:18px;border-radius:50%;background:var(--gold);color:#fff;font-size:11px;font-weight:900;display:grid;place-items:center}
+.uu.carry span{text-decoration:underline;text-decoration-color:var(--gold);text-underline-offset:2px}
+.need{font-size:13px;margin-top:10px;line-height:1.6}.need b{margin-right:4px}
+.cits{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.cit{display:grid;grid-template-columns:34px 7.5em minmax(0,1fr);gap:8px;align-items:center;font-size:14px}
+.cit em{display:block;font-style:normal;font-size:11px;color:var(--gold)}
+.cit>span{display:flex;flex-wrap:wrap;gap:4px 10px}
+.ci2{display:inline-flex;align-items:center;gap:4px;font-size:13px;white-space:nowrap}
+.ci2 .mi{width:24px;height:24px}
+.src{font-size:12px;color:var(--sub);margin:8px 0 4px}
+@media(max-width:760px){
+ #deck{max-height:88vh}
+ .units{grid-template-columns:repeat(5,minmax(0,1fr));gap:8px 6px}
+ .cit{grid-template-columns:34px minmax(0,1fr)}
+ .cit>span{grid-column:1/-1}
+ .comp{padding:12px}
+}
 @keyframes up{from{transform:translateY(40px);opacity:.6}to{transform:none;opacity:1}}
 @keyframes fade{from{opacity:0}to{opacity:1}}
 @media(prefers-reduced-motion:reduce){#det.sheet,#det.sheet .panel{animation:none}}
@@ -175,7 +208,7 @@ footer a{color:var(--sub)}
 </footer>
 
 <div id="deck">
- <div class="dh"><h2>내 덱 아이템</h2><div><button class="ghost" id="deckClear">비우기</button> <button class="ghost" id="deckClose">닫기</button></div></div>
+ <div class="dh"><h2>내 덱 · 추천 덱</h2><div><button class="ghost" id="deckClear">비우기</button> <button class="ghost" id="deckClose">닫기</button></div></div>
  <div class="dbody" id="deckBody"></div>
 </div>
 
@@ -299,6 +332,75 @@ const CH=[
  ['taric','타릭',5,['에메랄드 성위','선봉대'],['가고일 돌갑옷','크라운가드','워모그의 갑옷'],['정령의 형상','수호자의 맹세','태양불꽃 망토']]
 ].map(([id,n,c,t,i,a])=>({id,n,c,t,i,a}));
 
+/* ---------- 메타 덱: seemeta.com 18.6 (평균 등수 순 티어) + 운영 방식 bunnymuffins.lol 18.6 ---------- */
+const FF='빠른 8·9레벨',R1='1코 리롤',R2='2코 리롤',R3='3코 리롤';
+const COMPS=[
+ {n:'협곡야수 덩굴정령 & 장로 드래곤',t:'S+',p:3.60,lv:FF,u:['덩굴정령','장로 드래곤','돌거북','조약돌','바위 게','어스름늑대','세트','파수꾼','타릭'],it:{'덩굴정령':['밤의 끝자락','구인수의 격노검','수은'],'장로 드래곤':['무한의 대검','최후의 속삭임','타격대의 철퇴'],'돌거북':['가고일 돌갑옷','정령의 형상','워모그의 갑옷']},tip:'덩굴정령에 구인수·밤끝은 필수. 협곡야수 7을 켜는 게 목표.'},
+ {n:'기원자 티모',t:'S+',p:4.16,lv:R2,u:['티모','르블랑','모르가나','베이가','코부코','알리스타','코그모','헤카림','파수꾼'],it:{'티모':['보석 건틀릿','쇼진의 창','타격대의 철퇴'],'르블랑':['보석 건틀릿','라바돈의 죽음모자','쇼진의 창'],'모르가나':['적응형 투구','모렐로노미콘','공허의 지팡이']},tip:'티모는 최소 보석 건틀릿 + 쇼진. 4등 안엔 잘 들지만 1등 확률은 낮은 편.'},
+ {n:'소환사 어미 부리',t:'S',p:4.16,lv:'',u:['어미 부리','자이라','헤카림','자야','알리스타','아지르','돌거북','파수꾼','아펠리오스'],it:{'어미 부리':['구인수의 격노검','마법공학 총검','거인의 결의'],'자이라':['쇼진의 창','대천사의 지팡이','모렐로노미콘'],'헤카림':['가고일 돌갑옷','수호자의 맹세','워모그의 갑옷']},tip:''},
+ {n:'처형자 아지르',t:'S',p:4.16,lv:R3,u:['아지르','자이라','람머스','베이가','티모','피들스틱','소라카','이즈리얼','케넨'],it:{'아지르':['구인수의 격노검','마법공학 총검','라바돈의 죽음모자'],'자이라':['모렐로노미콘','쇼진의 창','공허의 지팡이'],'람머스':['가고일 돌갑옷','정령의 형상','워모그의 갑옷']},tip:'지팡이 3개 이상(마법공학 총검 포함) 필요.'},
+ {n:'적응가 마스터 이',t:'S',p:4.21,lv:R3,u:['마스터 이','렝가','니달리','요릭','심술두꺼비','돌거북','바이','코그모','세트'],it:{'마스터 이':['밤의 끝자락','구인수의 격노검','거인의 결의'],'렝가':['밤의 끝자락','구인수의 격노검','거인의 결의'],'니달리':['구인수의 격노검','보석 건틀릿','라바돈의 죽음모자']},tip:'마스터 이 3성은 무조건. AP로 키우면 구인수, AD면 수은.'},
+ {n:'원시 시비르',t:'A',p:4.28,lv:FF,u:['시비르','니달리','아무무','라칸','쉔','코그모','파수꾼','릴리아','애쉬'],it:{'시비르':['푸른 파수꾼','죽음의 검','무한의 대검'],'니달리':['피바라기','밤의 끝자락','스테락의 도전'],'아무무':['가고일 돌갑옷','정령의 형상','워모그의 갑옷']},tip:'애쉬까지 쓰려면 9레벨 필수. 시비르·니달리 둘 다 아이템 챙기기.'},
+ {n:'전쟁기계 드레이븐',t:'A',p:4.24,lv:FF,u:['드레이븐','장로 드래곤','이즈리얼','파수꾼','아무무','타릭','케넨','아이번','마오카이'],it:{'드레이븐':['죽음의 검','구인수의 격노검','크라켄의 분노'],'장로 드래곤':['무한의 대검','최후의 속삭임','타격대의 철퇴'],'이즈리얼':['죽음의 검','최후의 속삭임','쇼진의 창']},tip:'5-2까지 9레벨 필수. 드레이븐 구인수는 꼭.'},
+ {n:'전쟁기계 시비르',t:'A',p:4.29,lv:FF,u:['시비르','애쉬','마오카이','라칸','바이','아무무','케넨','아이번','타릭'],it:{'시비르':['무한의 대검','쇼진의 창','타격대의 철퇴'],'애쉬':['최후의 속삭임','붉은 덩굴정령','쇼진의 창'],'마오카이':['가고일 돌갑옷','정령의 형상','워모그의 갑옷']},tip:'전쟁기계로 초반 버티고 9레벨을 최대한 빨리.'},
+ {n:'나무정령 아펠리오스',t:'A',p:4.31,lv:FF,u:['아펠리오스','이즈리얼','릴리아','자야','오른','르블랑','알리스타','다이애나','헤카림'],it:{'아펠리오스':['구인수의 격노검','무한의 대검','크라켄의 분노'],'이즈리얼':['죽음의 검','최후의 속삭임','쇼진의 창'],'릴리아':['가고일 돌갑옷','정령의 형상','워모그의 갑옷']},tip:'대검 계열 아이템이 많이 필요.'},
+ {n:'햇빛 케일 & 아펠리오스',t:'A',p:4.33,lv:'',u:['케일','아펠리오스','바루스','레오나','쉔','세주아니','다이애나','아무무','알룬'],it:{'케일':['구인수의 격노검','보석 건틀릿','라바돈의 죽음모자'],'아펠리오스':['죽음의 검','구인수의 격노검','크라켄의 분노'],'바루스':['죽음의 검','무한의 대검','쇼진의 창']},tip:''},
+ {n:'기원자 아리',t:'A',p:4.35,lv:FF,u:['아리','모르가나','세트','카르마','조약돌','돌거북','파수꾼','타릭','알룬'],it:{'아리':['보석 건틀릿','쇼진의 창','타격대의 철퇴'],'모르가나':['모렐로노미콘','라바돈의 죽음모자','공허의 지팡이'],'세트':['가고일 돌갑옷','정령의 형상','워모그의 갑옷']},tip:'아이템을 많이 먹는 덱. 8레벨에서 아리·모르가나 2성 리롤.'},
+ {n:'선봉대 알룬',t:'A',p:4.34,lv:'',u:['알룬','모르가나','파수꾼','라칸','피들스틱','다이애나','릴리아','아이번','타릭'],it:{'알룬':['보석 건틀릿','쇼진의 창','타격대의 철퇴'],'모르가나':['마법공학 총검','모렐로노미콘','공허의 지팡이'],'파수꾼':['가고일 돌갑옷','수호자의 맹세','워모그의 갑옷']},tip:''},
+ {n:'사냥꾼 시비르 & 애쉬',t:'B',p:4.38,lv:FF,u:['시비르','애쉬','아무무','라칸','쉔','바이','트리스타나','릴리아','케넨'],it:{'시비르':['무한의 대검','쇼진의 창','최후의 속삭임'],'애쉬':['최후의 속삭임','붉은 덩굴정령','쇼진의 창'],'아무무':['가고일 돌갑옷','정령의 형상','워모그의 갑옷']},tip:'애쉬를 위해 9레벨까지.'},
+ {n:'처형자 이즈리얼',t:'B',p:4.40,lv:FF,u:['이즈리얼','소라카','아리','오른','유나라','알리스타','피들스틱','헤카림','세트'],it:{'이즈리얼':['죽음의 검','최후의 속삭임','쇼진의 창'],'소라카':['쇼진의 창','라바돈의 죽음모자','보석 건틀릿'],'아리':['쇼진의 창','보석 건틀릿','라바돈의 죽음모자']},tip:'이즈리얼·소라카에 마나 아이템(쇼진) 필수.'},
+ {n:'주문술사 베이가',t:'B',p:4.43,lv:R1,u:['베이가','르블랑','오른','렉사이','알리스타','피들스틱','카시오페아','아리','알룬'],it:{'베이가':['푸른 파수꾼','마법공학 총검','보석 건틀릿'],'르블랑':['모렐로노미콘','쇼진의 창','공허의 지팡이'],'오른':['크라운가드','가고일 돌갑옷','워모그의 갑옷']},tip:'1코 3성 나올 때까지 레벨업 참기. 골드 40 이상 유지.'},
+ {n:'엄호대 카시오페아',t:'B',p:4.45,lv:R3,u:['카시오페아','람머스','렝가','오른','레오나','쉔','피들스틱','릴리아','소라카'],it:{'카시오페아':['대천사의 지팡이','마법공학 총검','쇼진의 창'],'람머스':['가고일 돌갑옷','굳건한 심장','워모그의 갑옷'],'렝가':['구인수의 격노검','거인의 결의','밤의 끝자락']},tip:'카시오페아 베스트 아이템(총검·대천사·쇼진)이 맞아야 함.'},
+ {n:'달빛 아펠리오스',t:'B',p:4.46,lv:FF,u:['아펠리오스','니달리','아무무','바루스','바이','코그모','다이애나','파수꾼','알룬'],it:{'아펠리오스':['구인수의 격노검','무한의 대검','크라켄의 분노'],'니달리':['무한의 대검','쇼진의 창','스테락의 도전'],'아무무':['가고일 돌갑옷','정령의 형상','워모그의 갑옷']},tip:'대검 계열 아이템이 많이 필요.'},
+ {n:'사냥꾼 시비르 & 니달리',t:'B',p:4.47,lv:FF,u:['시비르','니달리','말파이트','불타는 묘목','렉사이','돌거북','코그모','파수꾼','애쉬'],it:{'시비르':['푸른 파수꾼','죽음의 검','무한의 대검'],'니달리':['무한의 대검','쇼진의 창','스테락의 도전'],'말파이트':['크라운가드','가고일 돌갑옷','워모그의 갑옷']},tip:'애쉬를 위해 9레벨까지. 시비르·니달리 둘 다 아이템 챙기기.'},
+ {n:'햇빛 카르마',t:'B',p:4.49,lv:R2,u:['카르마','유나라','세주아니','레오나','요릭','케일','르블랑','피들스틱','아지르'],it:{'카르마':['푸른 파수꾼','보석 건틀릿','라바돈의 죽음모자'],'유나라':['죽음의 검','최후의 속삭임','쇼진의 창'],'세주아니':['가고일 돌갑옷','정령의 형상','워모그의 갑옷']},tip:'리롤 덱이지만 결국 8레벨은 찍어야 함.'},
+ {n:'소환사 자이라',t:'B',p:4.52,lv:FF,u:['자이라','소라카','말파이트','요릭','피들스틱','아지르','아무무','이즈리얼','케넨'],it:{'자이라':['공허의 지팡이','쇼진의 창','대천사의 지팡이'],'소라카':['쇼진의 창','라바돈의 죽음모자','보석 건틀릿'],'말파이트':['크라운가드','가고일 돌갑옷','워모그의 갑옷']},tip:'치명적인 꽃 필수. 4-2에 말파이트 2성 리롤.'},
+ {n:'요정 트리스타나',t:'C',p:4.53,lv:R3,u:['트리스타나','시비르','렝가','자야','라칸','코부코','바이','람머스','릴리아'],it:{'트리스타나':['거인 학살자','구인수의 격노검','마법공학 총검'],'시비르':['최후의 속삭임','무한의 대검','붉은 덩굴정령'],'렝가':['밤의 끝자락','구인수의 격노검','거인의 결의']},tip:'천천히 리롤하며 렝가·트리스타나 3성.'},
+ {n:'전쟁기계 자이라',t:'C',p:4.56,lv:FF,u:['자이라','니달리','아무무','요릭','라칸','바위 게','세주아니','바이','마오카이'],it:{'자이라':['대천사의 지팡이','마법공학 총검','쇼진의 창'],'니달리':['대천사의 지팡이','구인수의 격노검','공허의 지팡이'],'아무무':['가고일 돌갑옷','정령의 형상','워모그의 갑옷']},tip:'전쟁기계로 초반 버티고 9레벨을 최대한 빨리.'},
+ {n:'사냥꾼 케이틀린',t:'C',p:4.58,lv:R2,u:['케이틀린','시비르','바위 게','라칸','세주아니','바이','트리스타나','아무무','마오카이'],it:{'케이틀린':['구인수의 격노검','마법공학 총검','크라켄의 분노'],'시비르':['무한의 대검','최후의 속삭임','붉은 덩굴정령'],'바위 게':['가고일 돌갑옷','정령의 형상','워모그의 갑옷']},tip:'곡궁이 여러 개 필요.'},
+ {n:'개화 아리 & 애쉬',t:'C',p:4.58,lv:FF,u:['아리','애쉬','세트','카르마','요릭','유나라','바이','마스터 이','시비르'],it:{'아리':['보석 건틀릿','쇼진의 창','타격대의 철퇴'],'애쉬':['최후의 속삭임','붉은 덩굴정령','쇼진의 창'],'세트':['가고일 돌갑옷','정령의 형상','워모그의 갑옷']},tip:'9레벨까지 가야 하는 덱.'},
+ {n:'나무정령 이즈리얼',t:'C',p:4.64,lv:FF,u:['이즈리얼','르블랑','소라카','자야','오른','알리스타','피들스틱','헤카림','럭스'],it:{'이즈리얼':['죽음의 검','최후의 속삭임','쇼진의 창'],'르블랑':['보석 건틀릿','푸른 파수꾼','쇼진의 창'],'소라카':['라바돈의 죽음모자','쇼진의 창','보석 건틀릿']},tip:'이즈리얼·소라카에 마나 아이템 필수. 나무정령 럭스가 뜨면 큰 힘.'},
+ {n:'개화 아리 & 자이라',t:'C',p:4.65,lv:'',u:['아리','자이라','세트','요릭','라칸','돌거북','피들스틱','릴리아','타릭'],it:{'아리':['보석 건틀릿','쇼진의 창','타격대의 철퇴'],'자이라':['모렐로노미콘','쇼진의 창','공허의 지팡이'],'세트':['가고일 돌갑옷','정령의 형상','워모그의 갑옷']},tip:''},
+ {n:'지옥불 아칼리',t:'C',p:4.70,lv:R1,u:['아칼리','카밀','바루스','레오나','오른','세주아니','케일','코그모','아무무'],it:{'아칼리':['밤의 끝자락','정의의 손길','보석 건틀릿'],'카밀':['무한의 대검','수은','스테락의 도전'],'바루스':['무한의 대검','최후의 속삭임','쇼진의 창']},tip:'오른은 꼭 필요. 3성 못 맞추면 무너지는 덱.'},
+ {n:'약탈자 워윅',t:'C',p:4.69,lv:'',u:['워윅','덩굴정령','어스름늑대','렉사이','아칼리','돌거북','다이애나','아지르','말파이트'],it:{'워윅':['쇼진의 창','스테락의 도전','거인의 결의'],'덩굴정령':['밤의 끝자락','구인수의 격노검','수은'],'어스름늑대':['밤의 끝자락','정의의 손길','수은']},tip:''},
+ {n:'선봉대 아펠리오스',t:'C',p:4.72,lv:FF,u:['아펠리오스','덩굴정령','파수꾼','라칸','다이애나','어미 부리','헤카림','아무무','타릭'],it:{'아펠리오스':['구인수의 격노검','무한의 대검','크라켄의 분노'],'덩굴정령':['밤의 끝자락','구인수의 격노검','수은'],'파수꾼':['가고일 돌갑옷','수호자의 맹세','워모그의 갑옷']},tip:'아펠리오스·덩굴정령 2성 전에는 9레벨 가지 말기.'},
+ {n:'햇빛 케일 & 자야',t:'D',p:4.78,lv:R1,u:['케일','자야','라칸','레오나','오른','세주아니','르블랑','다이애나','아펠리오스'],it:{'케일':['구인수의 격노검','보석 건틀릿','라바돈의 죽음모자'],'자야':['죽음의 검','구인수의 격노검','크라켄의 분노'],'라칸':['가고일 돌갑옷','정령의 형상','워모그의 갑옷']},tip:'3성 여러 개가 필요한 덱. 벤치가 막히면 세주아니부터 팔기.'},
+ {n:'날렵이 베이가',t:'D',p:4.95,lv:'',u:['베이가','티모','트리스타나','코부코','렉사이','피들스틱','람머스','세트','릴리아'],it:{'베이가':['푸른 파수꾼','마법공학 총검','보석 건틀릿'],'티모':['보석 건틀릿','쇼진의 창','공허의 지팡이'],'트리스타나':['구인수의 격노검','무한의 대검','크라켄의 분노']},tip:''},
+ {n:'협곡야수 덩굴정령 & 조약돌',t:'D',p:5.01,lv:R3,u:['덩굴정령','조약돌','돌거북','불타는 묘목','어스름늑대','심술두꺼비','바위 게','어미 부리','파수꾼'],it:{'덩굴정령':['밤의 끝자락','구인수의 격노검','수은'],'조약돌':['푸른 파수꾼','보석 건틀릿','라바돈의 죽음모자'],'돌거북':['가고일 돌갑옷','정령의 형상','워모그의 갑옷']},tip:'돌거북 3성이 핵심. 초반에 협곡야수 5를 켜야 함.'},
+ {n:'경쟁자 카직스',t:'D',p:5.06,lv:R3,u:['카직스','렝가','헤카림','오른','피들스틱','다이애나','소라카','아펠리오스','이즈리얼'],it:{'카직스':['밤의 끝자락','정의의 손길','라바돈의 죽음모자'],'렝가':['밤의 끝자락','구인수의 격노검','거인의 결의'],'헤카림':['가고일 돌갑옷','정령의 형상','워모그의 갑옷']},tip:'3-2까지 카직스를 못 잡으면 접는 게 나음.'},
+ {n:'악의 여단 모르가나',t:'D',p:5.10,lv:'',u:['모르가나','알룬','카시오페아','카밀','케이틀린','엘리스','다이애나','파수꾼','타릭'],it:{'모르가나':['적응형 투구','모렐로노미콘','공허의 지팡이'],'알룬':['보석 건틀릿','내셔의 이빨','쇼진의 창'],'카시오페아':['대천사의 지팡이','마법공학 총검','쇼진의 창']},tip:''}
+];
+const LVTIP={[FF]:'연승 중이면 2-1 4렙 · 2-5 5렙 · 3-1 6렙 · 3-5 7렙 · 4-2 8렙 · 5-2 9렙. 4-2부터 8렙에서 리롤.',[R1]:'1코 캐리 3성까지 낮은 레벨에서 리롤.',[R2]:'2코 캐리 3성까지 5~6렙에서 리롤, 이후 8렙.',[R3]:'3코 캐리 3성까지 6~7렙에서 리롤, 이후 8렙.'};
+
+/* ---------- 덱 추천 ---------- */
+const cByN=n=>CH.find(c=>c.n===n);
+const TIERC={'S+':'#d6336c','S':'#e8590c','A':'#7048e8','B':'#1c7ed6','C':'#2f9e44','D':'#868e96'};
+function synergy(units){
+ const m={};units.forEach(c=>c.t.forEach(t=>m[t]=(m[t]||0)+1));
+ return Object.entries(m).map(([n,k])=>{const t=tByN(n);const bp=t?t.bp:[1];const on=bp.filter(b=>k>=b).pop()||0;const nx=bp.find(b=>b>k);return {n,k,on,nx,u:t&&t.g==='고유'}})
+  .sort((a,b)=>(b.on>0)-(a.on>0)||b.on-a.on||b.k-a.k);
+}
+const synHTML=list=>list.length?`<div class="syn">${list.map(x=>`<span class="sy${x.on?' on':''}">${esc(x.n)} <b>${x.k}</b>${!x.u&&x.nx?`<i>/${x.nx}</i>`:''}</span>`).join('')}</div>`:'';
+function recs(){
+ const own=new Set(deck.map(id=>cById(id).n));
+ const list=COMPS.map(c=>{let sc=0;const m=[];c.u.forEach((u,i)=>{if(own.has(u)){m.push(u);sc+=i===0?2.5:(c.it[u]?1.5:1)}});return {c,sc:sc?sc-(c.p-4)*3:0,m}});
+ if(!own.size)return {own,list:list.filter(x=>x.c.t==='S+'||x.c.t==='S').slice(0,3)};
+ return {own,list:list.filter(x=>x.sc>0).sort((a,b)=>b.sc-a.sc||a.c.p-b.c.p).slice(0,3)};
+}
+function compHTML(x,own,rank){
+ const c=x.c,units=c.u.map(cByN);
+ const need=units.filter(u=>!own.has(u.n)).sort((a,b)=>a.c-b.c);
+ return `<div class="comp">
+  <div class="chh"><span class="tier" style="--tc:${TIERC[c.t]}">${c.t}</span><b>${rank}. ${esc(c.n)}</b></div>
+  <div class="cm">평균 ${c.p.toFixed(2)}등${c.lv?` · ${esc(c.lv)}`:''}${own.size?` · 내 덱과 <b>${x.m.length}/9</b> 겹침`:''}</div>
+  <div class="units">${units.map((u,i)=>`<button class="uu${own.has(u.n)?' have':''}${i===0?' carry':''}" data-c="${u.id}" style="--cost:${COSTC[u.c]}">${por(u.n,'up')}<span>${esc(u.n)}</span></button>`).join('')}</div>
+  ${own.size&&need.length?`<div class="need"><b>더 모을 챔피언</b> ${need.map(u=>`<span style="color:${COSTC[u.c]}">${esc(u.n)}</span>`).join(' · ')}</div>`:''}
+  <div class="cits">${Object.entries(c.it).map(([u,its],i)=>`<div class="cit">${por(u,'ps')}<b>${esc(u)}${i===0?' <em>메인 캐리</em>':''}</b><span>${its.map(n=>`<span class="ci2">${img(n,'mi')}${esc(n)}</span>`).join('')}</span></div>`).join('')}</div>
+  ${c.lv?`<div class="note"><b>${esc(c.lv)}</b> — ${esc(LVTIP[c.lv])}</div>`:''}
+  ${c.tip?`<div class="note">${esc(c.tip)}</div>`:''}
+  <div class="sec" style="margin:10px 0 6px">최종 시너지</div>${synHTML(synergy(units))}
+ </div>`;
+}
 const CNOTE={
  lux:'럭스는 게임마다 계열이 달라짐(개화·악의 여단·나무정령·검은 가시·요정·지옥불·달빛·원시·햇빛 중 하나). 아이템은 거의 같음.',
  akali:'적응가 — 공격력·주문력 둘 다 받아서 AD·AP 아이템이 섞임.',
@@ -367,12 +469,22 @@ function detHTML(){
  </div>`;
 }
 function deckHTML(){
- if(!deck.length) return '<div class="empty">챔피언 상세에서 “+ 내 덱에 추가”를 누르면 여기에 3신기가 모여요.</div>';
- const all=[];deck.forEach(id=>all.push(...cById(id).i));
- return deck.map(id=>{const c=cById(id);return `<div class="drow" style="--cost:${COSTC[c.c]}"><b class="chd">${por(c.n,'ps')}${esc(c.n)}</b>
-  <div class="mini">${c.i.map(n=>`<div>${dots(n)}${esc(n)}</div>`).join('')}</div>
-  <button class="x" data-rm="${c.id}" aria-label="빼기">✕</button></div>`}).join('')+
-  `<div class="sec">덱 전체 필요 재료</div><div class="sum">${need(all)}</div>`;
+ const {own,list}=recs();
+ let h='';
+ if(!deck.length){
+  h+='<div class="empty">챔피언 상세에서 “+ 내 덱에 추가”를 누르면 여기에 3신기가 모이고, 그 챔피언들로 갈 수 있는 최종 덱을 추천해줘요.</div>';
+ }else{
+  const all=[];deck.forEach(id=>all.push(...cById(id).i));
+  h+=deck.map(id=>{const c=cById(id);return `<div class="drow" style="--cost:${COSTC[c.c]}"><b class="chd">${por(c.n,'ps')}${esc(c.n)}</b>
+  <div class="mini">${c.i.map(n=>`<div>${dots(n)}<span class="mn">${esc(n)}</span></div>`).join('')}</div>
+  <button class="x" data-rm="${c.id}" aria-label="빼기">✕</button></div>`}).join('');
+  h+=`<div class="sec">덱 전체 필요 재료</div><div class="sum">${need(all)}</div>`;
+  h+=`<div class="sec">지금 시너지</div>${synHTML(synergy(deck.map(cById)))}`;
+ }
+ h+=`<div class="sec rech">${deck.length?'추천 최종 덱 — 내 덱과 많이 겹치는 메타 덱':'지금 메타 상위 덱 (S+ · S)'}</div>`;
+ h+=list.length?list.map((x,i)=>compHTML(x,own,i+1)).join(''):'<div class="empty">겹치는 메타 덱이 없어요. 다른 챔피언을 추가해보세요.</div>';
+ h+='<div class="src">덱 데이터: seemeta.com 18.6 (평균 등수 기준 티어) · 운영 방식: bunnymuffins.lol 18.6. 겹치는 챔피언 수(캐리는 가산점)와 덱의 평균 등수를 함께 따져 순위를 매겨요.</div>';
+ return h;
 }
 const $=s=>document.querySelector(s);
 const wide=()=>matchMedia('(min-width:1120px)').matches;
